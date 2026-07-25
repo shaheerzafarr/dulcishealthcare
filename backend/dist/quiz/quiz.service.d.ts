@@ -1,0 +1,43 @@
+import { Repository } from 'typeorm';
+import { Quiz } from './entities/quiz.entity.js';
+import { QuizQuestion } from './entities/quiz-question.entity.js';
+import { QuizOption } from './entities/quiz-option.entity.js';
+import { QuizAnswer } from './entities/quiz-answer.entity.js';
+import { QuizResult } from './entities/quiz-result.entity.js';
+import { QuizRecommendation } from './entities/quiz-recommendation.entity.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
+export declare class QuizService {
+    private quizRepo;
+    private questionRepo;
+    private optionRepo;
+    private answerRepo;
+    private resultRepo;
+    private recRepo;
+    constructor(quizRepo: Repository<Quiz>, questionRepo: Repository<QuizQuestion>, optionRepo: Repository<QuizOption>, answerRepo: Repository<QuizAnswer>, resultRepo: Repository<QuizResult>, recRepo: Repository<QuizRecommendation>);
+    getActiveQuiz(): Promise<Quiz>;
+    submitAnswers(userId: string | null, sessionId: string | null, answersDto: any[]): Promise<any>;
+    findAllQuizzes(): Promise<Quiz[]>;
+    findQuizById(id: string): Promise<Quiz>;
+    createQuiz(dto: any): Promise<Quiz>;
+    updateQuiz(id: string, dto: any): Promise<Quiz>;
+    deleteQuiz(id: string): Promise<void>;
+    addQuestion(quizId: string, dto: any): Promise<QuizQuestion>;
+    updateQuestion(qId: string, dto: any): Promise<QuizQuestion>;
+    deleteQuestion(qId: string): Promise<void>;
+    addOption(qId: string, dto: any): Promise<QuizOption>;
+    updateOption(oId: string, dto: any): Promise<QuizOption>;
+    deleteOption(oId: string): Promise<void>;
+    getResults(quizId: string): Promise<QuizResult[]>;
+    createResult(quizId: string, dto: any): Promise<QuizResult>;
+    updateResult(rId: string, dto: any): Promise<QuizResult>;
+    deleteResult(rId: string): Promise<void>;
+    addRecommendation(resultId: string, dto: any): Promise<QuizRecommendation>;
+    deleteRecommendation(recId: string): Promise<void>;
+    getSubmissions(paginationDto: PaginationDto): Promise<{
+        submissions: QuizAnswer[];
+        total: number;
+        page: number;
+        limit: number;
+    }>;
+    getSubmissionStats(): Promise<any>;
+}

@@ -1,0 +1,38 @@
+import { Category } from './category.entity.js';
+import { ProductImage } from './product-image.entity.js';
+import { ProductGallery } from './product-gallery.entity.js';
+import { ProductVariant } from './product-variant.entity.js';
+import { ProductTag } from './product-tag.entity.js';
+import { ProductIngredient } from './product-ingredient.entity.js';
+import { ProductBenefit } from './product-benefit.entity.js';
+import { Review } from './review.entity.js';
+import { Wishlist } from './wishlist.entity.js';
+import { RelatedProduct } from './related-product.entity.js';
+export declare class Product {
+    id: string;
+    categoryId: string;
+    category: Category;
+    name: string;
+    slug: string;
+    sku: string;
+    description: string;
+    details: string;
+    basePrice: number;
+    comparePrice: number;
+    costPrice: number;
+    isActive: boolean;
+    isFeatured: boolean;
+    metaTitle: string;
+    metaDescription: string;
+    createdAt: Date;
+    updatedAt: Date;
+    images: ProductImage[];
+    gallery: ProductGallery[];
+    variants: ProductVariant[];
+    tags: ProductTag[];
+    ingredients: ProductIngredient[];
+    benefits: ProductBenefit[];
+    reviews: Review[];
+    wishlists: Wishlist[];
+    relatedProducts: RelatedProduct[];
+}

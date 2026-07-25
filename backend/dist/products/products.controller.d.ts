@@ -1,0 +1,63 @@
+import type { Response, Request } from 'express';
+import { ProductsService } from './products.service.js';
+import { CreateProductDto } from './dto/create-product.dto.js';
+import { UpdateProductDto } from './dto/update-product.dto.js';
+import { CreateCategoryDto } from './dto/create-category.dto.js';
+import { UpdateCategoryDto } from './dto/update-category.dto.js';
+import { CreateVariantDto } from './dto/create-variant.dto.js';
+import { UpdateVariantDto } from './dto/update-variant.dto.js';
+import { CreateReviewDto } from './dto/create-review.dto.js';
+import { AddCartItemDto } from './dto/add-cart-item.dto.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
+export declare class ProductsController {
+    private readonly productsService;
+    constructor(productsService: ProductsService);
+    getCategories(): Promise<import("./entities/category.entity.js").Category[]>;
+    serveCategoryImage(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    getProducts(paginationDto: PaginationDto, categorySlug?: string, search?: string, sort?: string): Promise<{
+        products: import("./entities/product.entity.js").Product[];
+        total: number;
+        page: number;
+        limit: number;
+    }>;
+    getProductBySlug(slug: string): Promise<import("./entities/product.entity.js").Product>;
+    serveProductImage(imageId: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    createReview(user: any, dto: CreateReviewDto): Promise<import("./entities/review.entity.js").Review>;
+    getWishlist(user: any): Promise<import("./entities/wishlist.entity.js").Wishlist[]>;
+    addToWishlist(user: any, productId: string): Promise<import("./entities/wishlist.entity.js").Wishlist>;
+    removeFromWishlist(user: any, productId: string): Promise<void>;
+    getCart(req: Request): Promise<import("./entities/cart.entity.js").Cart>;
+    addToCart(req: Request, dto: AddCartItemDto): Promise<import("./entities/cart-item.entity.js").CartItem>;
+    updateCartItem(itemId: string, quantity: number): Promise<import("./entities/cart-item.entity.js").CartItem>;
+    removeCartItem(itemId: string): Promise<void>;
+    clearCart(req: Request): Promise<void>;
+    adminGetProducts(paginationDto: PaginationDto, categorySlug?: string, search?: string): Promise<{
+        products: import("./entities/product.entity.js").Product[];
+        total: number;
+        page: number;
+        limit: number;
+    }>;
+    adminGetProduct(id: string): Promise<import("./entities/product.entity.js").Product>;
+    adminCreateProduct(dto: CreateProductDto): Promise<import("./entities/product.entity.js").Product>;
+    adminUpdateProduct(id: string, dto: UpdateProductDto): Promise<import("./entities/product.entity.js").Product>;
+    adminDeleteProduct(id: string): Promise<void>;
+    adminUploadPrimaryImage(productId: string, file: Express.Multer.File): Promise<import("./entities/product-image.entity.js").ProductImage>;
+    adminUploadGalleryImage(productId: string, file: Express.Multer.File, caption?: string): Promise<import("./entities/product-gallery.entity.js").ProductGallery>;
+    adminDeleteImage(imageId: string): Promise<void>;
+    adminCreateCategory(dto: CreateCategoryDto, file?: Express.Multer.File): Promise<import("./entities/category.entity.js").Category>;
+    adminUpdateCategory(id: string, dto: UpdateCategoryDto, file?: Express.Multer.File): Promise<import("./entities/category.entity.js").Category>;
+    adminDeleteCategory(id: string): Promise<void>;
+    adminAddVariant(productId: string, dto: CreateVariantDto): Promise<import("./entities/product-variant.entity.js").ProductVariant>;
+    adminUpdateVariant(variantId: string, dto: UpdateVariantDto): Promise<import("./entities/product-variant.entity.js").ProductVariant>;
+    adminDeleteVariant(variantId: string): Promise<void>;
+    adminGetInventory(): Promise<import("./entities/product-inventory.entity.js").ProductInventory[]>;
+    adminUpdateInventory(variantId: string, quantity: number): Promise<import("./entities/product-inventory.entity.js").ProductInventory>;
+    adminGetReviews(paginationDto: PaginationDto, isApproved?: boolean): Promise<{
+        reviews: import("./entities/review.entity.js").Review[];
+        total: number;
+        page: number;
+        limit: number;
+    }>;
+    adminApproveReview(id: string): Promise<import("./entities/review.entity.js").Review>;
+    adminRejectReview(id: string): Promise<import("./entities/review.entity.js").Review>;
+}
