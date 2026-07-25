@@ -1,0 +1,182 @@
+DULCIS HEALTHCARE — PRODUCTION E-COMMERCE DATABASE SCHEMA (v2 — CORRECTED)
+══════════════════════════════════════════════════════════════════════════════
+Full SQL: schema.sql (46 tables, 3 views, seed data)
+Image Storage: BYTEA/BLOB in PostgreSQL (12-product catalog)
+Database: PostgreSQL 15+
+══════════════════════════════════════════════════════════════════════════════
+
+MODULE 1: USERS & AUTHENTICATION (4 tables)
+  - roles                      Role-based access (customer, admin, manager)
+  - users                      Accounts with avatar BYTEA, password hash
+  - user_addresses              Multiple addresses per user with default flag
+  - notification_preferences    Email/SMS/push preferences per user        [NEW]
+
+MODULE 2: PRODUCTS & CATALOG (13 tables)
+  - categories                 Skincare categories with BYTEA images
+  - products                   Core product entity with is_featured flag   [FIXED]
+  - product_images             BYTEA image storage, is_primary flag
+  - product_gallery            Lifestyle/context shots (separate from main)
+  - product_variants           Size variants (30ml, 50ml, 100ml)
+  - product_inventory          Variant-level stock with reserved quantity
+  - product_tags               Tagging: bestseller, trending, new_arrival  [NEW]
+  - product_ingredients        Ingredient list per product                 [NEW]
+  - product_benefits           Benefits list per product                   [NEW]
+  - related_products           Related / frequently bought together        [NEW]
+  - reviews                    Ratings with verified purchase & moderation
+  - wishlist                   User wishlists with unique constraint
+  - cart + cart_items           Server-side cart (supplements localStorage)
+
+MODULE 3: SHIPPING & TAXES (3 tables)                                      [NEW]
+  - shipping_zones             Geographic delivery zones
+  - shipping_rates             Flat/weight-based rates per zone
+  - tax_rules                  Country/state tax rates (Pakistan GST 17%)
+
+MODULE 4: ORDERS & FULFILLMENT (8 tables)
+  - orders                     Full order with ADDRESS SNAPSHOT             [FIXED]
+                               (shipping/billing copied at order time,
+                                not a FK to user_addresses)
+  - order_items                Line items with product name/price snapshot  [FIXED]
+  - order_status_history       Audit trail of every status change          [NEW]
+  - payments                   Payment intent/attempts (COD, JazzCash, etc.)
+  - transactions               Actual money movements (charge, refund)
+  - invoices                   Invoice generation with PDF BYTEA           [NEW]
+  - return_requests            Return process with photo proof BYTEA       [NEW]
+  - refunds                    Refund tracking linked to returns/payments   [NEW]
+
+MODULE 5: CMS (10 tables)
+  - pages                      Static page management
+  - page_sections              Flexible JSONB content blocks per page
+  - hero_slides                Homepage banner slides with BYTEA images
+  - category_cards             Homepage category card display
+  - testimonials               Customer testimonials with avatar BYTEA
+  - faq                        FAQ with category grouping
+  - blogs                      Blog posts with cover BYTEA
+  - announcements              Top-bar announcements with scheduling
+  - navigation                 Header/footer/mobile nav items (self-referencing)
+  - footer + settings          Footer sections and global key-value settings
+
+MODULE 6: SKIN QUIZ (5 tables)
+  - quizzes                    Quiz definitions
+  - quiz_questions             Questions with type (single/multi choice)
+  - quiz_options               Answer options with score tags
+  - quiz_answers               User/guest answers stored as JSONB
+  - quiz_results               Result profiles (acne, dryness, aging...)
+  - quiz_recommendations       Product recommendations per result
+
+MODULE 7: MARKETING & PROMOTIONS (6 tables)
+  - coupons                    Discount codes with usage limits
+  - coupon_usage               Per-user per-order usage tracking            [NEW]
+  - discounts                  Automatic discounts (category/product level)
+  - flash_sales                Time-limited sale events
+  - newsletter_subscribers     Email subscriptions with source tracking
+  - abandoned_carts            Cart recovery with email tracking
+
+MODULE 8: ANALYTICS & TRACKING (3 tables)
+  - visitor_sessions           Session tracking with device/geo info
+  - utm_tracking               Campaign attribution per session
+  - pixel_events               Server-side pixel events (Meta CAPI, GA4, TikTok, etc.)
+
+MODULE 9: MEDIA LIBRARY (1 table)                                          [NEW]
+  - media_library              Centralized BYTEA file storage with folders
+
+MODULE 10: AUDIT LOGS (1 table)                                            [NEW]
+  - audit_logs                 Admin action history with old/new JSONB values
+
+MODULE 11: CONTACT MESSAGES (1 table)                                      [NEW]
+  - contact_messages           Contact form submissions with admin workflow
+
+══════════════════════════════════════════════════════════════════════════════
+
+TOTAL: 46 TABLES + 3 VIEWS + SEED DATA
+       (Original had ~29 tables, 17 new tables added to fix gaps)
+
+══════════════════════════════════════════════════════════════════════════════
+
+VIEWS (computed, not stored)
+  - v_product_ratings          AVG rating & review count per product
+  - v_available_stock          Available stock (quantity - reserved) per variant
+  - v_order_summary            Order dashboard view with customer info
+
+══════════════════════════════════════════════════════════════════════════════
+
+ORDER PIPELINE (unchanged, now fully supported by schema)
+  Browse → View Product → Add to Cart → Checkout → Payment →
+  Create Order → Reserve Stock → Invoice → Packing →
+  Courier Pickup → Tracking → Delivered → Review
+
+══════════════════════════════════════════════════════════════════════════════
+
+ADMIN PANEL MODULES (all now backed by schema tables)
+  Dashboard              → v_order_summary, pixel_events
+  Products               → products, product_variants, product_images
+  Orders                 → orders, order_items, order_status_history
+  Customers              → users, user_addresses
+  Inventory              → product_inventory, v_available_stock
+  CMS Builder            → pages, page_sections, hero_slides, etc.
+  Skin Quiz Builder      → quizzes, quiz_questions, quiz_options
+  Coupons                → coupons, coupon_usage
+  Analytics              → visitor_sessions, utm_tracking
+  Pixel Integrations     → pixel_events (Meta, GA4, TikTok, Pinterest, Snapchat)
+  Shipping               → shipping_zones, shipping_rates
+  Payments               → payments, transactions
+  Media Library          → media_library
+  Returns                → return_requests, refunds
+  Roles & Permissions    → roles
+  Audit Logs             → audit_logs
+  Settings               → settings
+
+══════════════════════════════════════════════════════════════════════════════
+
+PIXELS (server-side CAPI supported via pixel_events table)
+  Meta Pixel + CAPI
+  Google Analytics 4
+  TikTok Pixel
+  Pinterest
+  Snapchat
+
+══════════════════════════════════════════════════════════════════════════════
+
+IMAGE STORAGE STRATEGY
+  All images stored as BYTEA in PostgreSQL (12-product catalog).
+  Tables using BYTEA:
+    - product_images.image_data       Product photos
+    - product_gallery.image_data      Lifestyle gallery shots
+    - categories.image_data           Category images
+    - hero_slides.image_data          Homepage banners
+    - category_cards.image_data       Homepage category cards
+    - testimonials.avatar_data        Customer avatars
+    - blogs.cover_data                Blog cover images
+    - return_requests.image_data      Return photo proof
+    - invoices.pdf_data               Generated PDF invoices
+    - users.avatar_data               User profile pictures
+    - media_library.file_data         Centralized media uploads
+    - settings.value_blob             Binary settings (logo, etc.)
+
+══════════════════════════════════════════════════════════════════════════════
+
+SEED DATA INCLUDED
+  - 3 roles: customer, admin, manager (with permissions JSONB)
+  - 4 shipping zones: Lahore Metro, Punjab, Sindh, All Pakistan
+  - 6 shipping rates: Standard + Free Shipping per zone
+  - 1 tax rule: Pakistan GST 17%
+
+══════════════════════════════════════════════════════════════════════════════
+
+ISSUES FIXED FROM ANALYSIS
+  ✓ Added shipping_zones + shipping_rates (checkout can't work without them)
+  ✓ Added tax_rules (skincare products need proper tax handling)
+  ✓ Added invoices with PDF BYTEA storage
+  ✓ Added order_status_history (audit trail for fulfillment pipeline)
+  ✓ Added return_requests + refunds (backs the "Easy Returns" promise)
+  ✓ Snapshotted addresses on orders (users changing addresses won't break history)
+  ✓ Snapshotted product name/price on order_items
+  ✓ Added product_tags for featured/trending/bestseller flags
+  ✓ Added product_ingredients + product_benefits (frontend already uses these)
+  ✓ Added related_products for FrequentlyBoughtTogether component
+  ✓ Added coupon_usage tracking (prevents coupon abuse)
+  ✓ Added notification_preferences per user
+  ✓ Added audit_logs (was in admin panel but missing from schema)
+  ✓ Added media_library (was in admin panel but missing from schema)
+  ✓ Added contact_messages (contact form had no backend table)
+  ✓ Added computed views for ratings, stock, and order summaries
+  ✓ Added proper indexes on all frequently queried columns
