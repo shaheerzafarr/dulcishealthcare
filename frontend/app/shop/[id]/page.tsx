@@ -97,7 +97,7 @@ export default function ProductDetailPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-28 pb-16">
         <Skeleton className="h-6 w-48 mb-8" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <Skeleton className="aspect-square rounded-3xl" />
@@ -117,7 +117,7 @@ export default function ProductDetailPage() {
   // Error / Not found
   if (isError || !product) {
     return (
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center text-center">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-28 pb-24 flex flex-col items-center text-center">
         <div className="h-16 w-16 bg-red-100 text-red-500 rounded-2xl flex items-center justify-center mb-6">
           <ShoppingBag className="h-8 w-8" />
         </div>
@@ -135,7 +135,7 @@ export default function ProductDetailPage() {
   return (
     <div className="w-full">
       {/* Breadcrumb */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-28 pb-5">
         <nav className="flex items-center gap-2 text-sm text-muted-foreground">
           <Link href="/" className="hover:text-teal transition-colors">Home</Link>
           <ChevronRight className="h-3.5 w-3.5" />

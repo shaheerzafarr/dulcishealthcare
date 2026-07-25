@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button";
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center flex-grow py-24 px-4 text-center">
+    <div className="flex flex-col items-center justify-center flex-grow pt-28 pb-24 px-4 text-center">
       <div className="h-16 w-16 bg-red-100 text-red-500 rounded-2xl flex items-center justify-center mb-6">
         <AlertCircle className="h-8 w-8" />
       </div>
